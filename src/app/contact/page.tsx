@@ -19,6 +19,7 @@ const NeuralBackground = () => {
     let animationFrameId: number;
 
     const resize = () => {
+      if (!canvas) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -26,13 +27,15 @@ const NeuralBackground = () => {
     class Particle {
       x: number; y: number; vx: number; vy: number; size: number;
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        const can = canvas!;
+        this.x = Math.random() * can.width;
+        this.y = Math.random() * can.height;
         this.vx = (Math.random() - 0.5) * 0.3;
         this.vy = (Math.random() - 0.5) * 0.3;
         this.size = Math.random() * 2 + 0.5;
       }
       update() {
+        const can = canvas!;
         this.x += this.vx; this.y += this.vy;
         if (mouse.current.active) {
           const dx = mouse.current.x - this.x;
@@ -40,12 +43,13 @@ const NeuralBackground = () => {
           const dist = Math.sqrt(dx*dx + dy*dy);
           if (dist < 200) { this.x += dx * 0.01; this.y += dy * 0.01; }
         }
-        if (this.x < 0) this.x = canvas.width; if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height; if (this.y > canvas.height) this.y = 0;
+        if (this.x < 0) this.x = can.width; if (this.x > can.width) this.x = 0;
+        if (this.y < 0) this.y = can.height; if (this.y > can.height) this.y = 0;
       }
       draw() {
-        ctx!.beginPath(); ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx!.fillStyle = 'rgba(226, 255, 49, 0.4)'; ctx!.fill();
+        if (!ctx) return;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(226, 255, 49, 0.4)'; ctx.fill();
       }
     }
 
